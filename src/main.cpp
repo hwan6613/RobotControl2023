@@ -110,7 +110,8 @@ void gazebo::RB1_500E::UpdateAlgorithm()
 
     // _rb.des_q[0] = 0.0; _rb.des_q[1] = 0.0; _rb.des_q[2] = 0.0;
     // _rb.des_q[3] = -0.0; _rb.des_q[4] = -0.0; _rb.des_q[5] = -0.0;
-
+    
+    // 목표 값
     _rb.des_q[0] = 0.0; _rb.des_q[1] = 0.0; _rb.des_q[2] = 0.0;
     _rb.des_q[3] = -0.0; _rb.des_q[4] = -0.0; _rb.des_q[5] = -0.0;
 
@@ -121,11 +122,12 @@ void gazebo::RB1_500E::UpdateAlgorithm()
     _rb.kd[0] = 0.5; _rb.kd[1] = 0.5; _rb.kd[2] = 0.1;
     _rb.kd[3] = 0.1; _rb.kd[4] = 0.1; _rb.kd[5] = 0.1;
     
-    for(int i = 0; i < NUM_OF_MC; i++)
+    for(int i = 0; i < NUM_OF_MC; i++) // NUM_OF_MC = 모터 제어기 개수(자유도)
     {
         _rb.tau[i] = _rb.kp[i]*(_rb.des_q[i]*D2R - _rb.enc_q[i]) + _rb.kd[i]*(0.0 - _rb.enc_Dq[i]);
     }
-
+    
+    // 토크 인가 2 = z , 1 = y
     this->JT0 -> SetForce(2, _rb.tau[0]); //setForce(axis,Force value)
     this->JT1 -> SetForce(1, _rb.tau[1]);
     this->JT2 -> SetForce(1, _rb.tau[2]);
@@ -142,6 +144,7 @@ void gazebo::RB1_500E::GET_RB_INFO(void)
 {
     for(int i = 0; i < NUM_OF_MC; i++)
     {
+        //수치미분으로 속도 얻는 부분
         _rb.enc_Dq[i] = (_rb.enc_q[i] - _rb.p_enc_q[i])/0.001;
 
         _rb.p_enc_q[i] = _rb.enc_q[i];
